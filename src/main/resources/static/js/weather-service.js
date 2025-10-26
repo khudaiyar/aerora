@@ -1,8 +1,9 @@
 // Weather Service - API Communication
 class WeatherService {
     constructor() {
-        this.baseURL = 'http://localhost:8080/api';
+        this.baseURL = 'https://aerora.onrender.com/api';
     }
+
 
     async getCurrentWeather(lat, lon) {
         try {
