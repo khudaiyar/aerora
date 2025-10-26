@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weather Travel Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/weather-animations.css">
+</head>
+<body>
+<!-- Video Background Container -->
+<div class="video-background">
+    <video id="bgVideo" autoplay muted loop playsinline>
+        <source src="videos/default.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Header Section -->
+    <div class="app-header">
+        <h1 class="app-title">Aerora</h1>
+        <p class="app-subtitle">Where I’ve been, and what the skies have seen.</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Add a new city to your collection..." autocomplete="off">
+            <button id="searchBtn" title="Search city">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </button>
+            <button id="locationBtn" title="Use my location">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+            </button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- Cities Grid -->
+    <div class="section-header">
+        <h2>Cities I've Visited (<span id="cityCount">0</span>)</h2>
+        <button id="addCityBtn" class="add-city-button">+ Add City</button>
+    </div>
+
+    <div id="citiesGrid" class="cities-grid">
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🗺️</div>
+            <h3>No cities added yet</h3>
+            <p>Start adding cities to build your weather travel map!</p>
+            <button class="cta-button" onclick="document.getElementById('searchInput').focus()">
+                Add Your First City
+            </button>
+        </div>
+    </div>
+
+    <!-- Detailed View Modal -->
+    <div id="cityDetailModal" class="modal">
+        <div class="modal-video-background">
+            <video id="modalBgVideo" autoplay muted loop playsinline>
+                <source src="videos/default.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+
+            <div class="modal-loading" id="modalLoader">
+                <div class="spinner"></div>
+            </div>
+
+            <div id="modalBody" style="display: none;">
+                <!-- Current Weather -->
+                <div class="modal-header">
+                    <div class="modal-location">
+                        <h2 id="modalCityName"></h2>
+                        <p id="modalLocalTime" class="local-time"></p>
+                        <p id="modalDateTime"></p>
+                    </div>
+                    <button id="removeCityBtn" class="remove-city-btn" title="Remove from collection">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        Remove City
+                    </button>
+                </div>
+
+                <div class="modal-current-weather">
+                    <div class="modal-temp-display">
+                        <img id="modalWeatherIcon" src="" alt="">
+                        <div>
+                            <div class="modal-temp">
+                                <span id="modalTemperature"></span>°C
+                            </div>
+                            <p id="modalDescription"></p>
+                            <p class="modal-feels">Feels like <span id="modalFeelsLike"></span>°C</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-details-grid">
+                        <div class="modal-detail">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                            </svg>
+                            <div>
+                                <span class="label">Humidity</span>
+                                <span class="value" id="modalHumidity"></span>
+                            </div>
+                        </div>
+                        <div class="modal-detail">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/>
+                            </svg>
+                            <div>
+                                <span class="label">Wind Speed</span>
+                                <span class="value" id="modalWindSpeed"></span>
+                            </div>
+                        </div>
+                        <div class="modal-detail">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.5 2v4M10 2v2"/>
+                            </svg>
+                            <div>
+                                <span class="label">Pressure</span>
+                                <span class="value" id="modalPressure"></span>
+                            </div>
+                        </div>
+                        <div class="modal-detail">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="4"/>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41"/>
+                            </svg>
+                            <div>
+                                <span class="label">UV Index</span>
+                                <span class="value" id="modalUV"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hourly Forecast -->
+                <div class="modal-section">
+                    <h3>Hourly Forecast</h3>
+                    <div id="modalHourly" class="modal-hourly-scroll"></div>
+                </div>
+
+                <!-- 7-Day Forecast -->
+                <div class="modal-section">
+                    <h3>7-Day Forecast</h3>
+                    <div id="modalForecast" class="modal-forecast-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/weather-service.js"></script>
+<script src="js/app.js"></script>
+<script src="js/animation.js" defer></script>
+</body>
+</html>

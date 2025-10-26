@@ -1,0 +1,213 @@
+/* Weather Animation Styles - PROFESSIONAL VERSION */
+
+/* Background Gradients for Different Weather Conditions */
+.weather-bg-clear-day {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.weather-bg-clear-night {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+
+.weather-bg-cloudy {
+    background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+}
+
+.weather-bg-rain {
+    background: linear-gradient(135deg, #4b79a1 0%, #283e51 100%);
+}
+
+.weather-bg-snow {
+    background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+}
+
+.weather-bg-thunderstorm {
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+
+.weather-bg-fog {
+    background: linear-gradient(135deg, #757f9a 0%, #d7dde8 100%);
+}
+
+.weather-bg-morning {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+}
+
+.weather-bg-afternoon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.weather-bg-evening {
+    background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+}
+
+/* Smooth Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Apply animations to cards */
+.weather-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.main-weather {
+    animation: scaleIn 0.6s ease-out;
+}
+
+.hourly-item {
+    animation: fadeIn 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.forecast-day {
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+/* Stagger animation delays */
+.hourly-item:nth-child(1) { animation-delay: 0.05s; }
+.hourly-item:nth-child(2) { animation-delay: 0.1s; }
+.hourly-item:nth-child(3) { animation-delay: 0.15s; }
+.hourly-item:nth-child(4) { animation-delay: 0.2s; }
+.hourly-item:nth-child(5) { animation-delay: 0.25s; }
+.hourly-item:nth-child(6) { animation-delay: 0.3s; }
+.hourly-item:nth-child(7) { animation-delay: 0.35s; }
+.hourly-item:nth-child(8) { animation-delay: 0.4s; }
+
+.forecast-day:nth-child(1) { animation-delay: 0.1s; }
+.forecast-day:nth-child(2) { animation-delay: 0.15s; }
+.forecast-day:nth-child(3) { animation-delay: 0.2s; }
+.forecast-day:nth-child(4) { animation-delay: 0.25s; }
+.forecast-day:nth-child(5) { animation-delay: 0.3s; }
+.forecast-day:nth-child(6) { animation-delay: 0.35s; }
+.forecast-day:nth-child(7) { animation-delay: 0.4s; }
+
+/* Weather Icon Hover Effects */
+#weatherIcon {
+    transition: transform 0.3s ease;
+}
+
+#weatherIcon:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Temperature Pulse */
+@keyframes tempPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* Loading animation enhancement */
+@keyframes loadingPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}
+
+.loading {
+    animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+/* Smooth transitions for all elements */
+.weather-card,
+.hourly-item,
+.forecast-day,
+.detail-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Particle Animations for Canvas */
+@keyframes rainFall {
+    0% {
+        transform: translateY(-100vh) translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(15px);
+        opacity: 0.3;
+    }
+}
+
+@keyframes snowFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+@keyframes cloudFloat {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+    }
+    50% {
+        transform: translateX(20px) translateY(-5px);
+    }
+}
+
+@keyframes starTwinkle {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Hover glow effect for interactive elements */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+    }
+}
+
+button:hover {
+    animation: glowPulse 2s ease-in-out infinite;
+}
