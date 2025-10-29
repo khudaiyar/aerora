@@ -121,8 +121,6 @@ I intentionally kept Aerora account-free. Weather is public information—everyo
 
 ---
 
-Screenshots
-
 <img width="2232" height="1265" alt="Aerora s" src="https://github.com/user-attachments/assets/b6f203c7-9898-4c2e-9bc9-7c58fbf2e7a2" />
 
 
