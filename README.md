@@ -1,4 +1,4 @@
-⚡ Aerora - Real-Time Global Weather
+Aerora - Real-Time Global Weather
 https://aerora.onrender.com
 
 
@@ -44,16 +44,16 @@ The hardest part? The canvas animations. Getting rain to fall at different speed
 
 Features
 
-🌍 8 Default Cities from Around the World
+8 Default Cities from Around the World
 See weather in New York, London, Tokyo, Paris, Sydney, Dubai, Moscow, and Singapore—all with different timezones and current conditions.
 
-🔍 Instant Search
+ Instant Search
 Type any city name and get instant results. No need to save or manage a list—just search and see.
 
-⏰ Accurate Local Times
+ Accurate Local Times
 Each city shows its actual local time, not yours. Tokyo at night looks different than New York at noon.
 
-🎨 Live Weather Animations
+ Live Weather Animations
 Every city card has animated weather effects:
 - ☀️ Sun with rotating rays (color changes with temperature)
 - 🌙 Glowing moon with twinkling stars
@@ -70,7 +70,7 @@ Click any city to see:
 - Hourly forecast (next 24 hours)
 - 7-day forecast
 
-📍 Use Your Location
+ Use Your Location
 Click the location button to see weather at your current position.
 
 ---
@@ -144,4 +144,4 @@ Built by Hudayyar Yusubov
 
 ---
 
-**Aerora** - Weather that feels alive ⚡
+Aerora - Weather that feels alive 
