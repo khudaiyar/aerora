@@ -4,6 +4,7 @@ class WeatherApp {
         this.cities = [];
         this.currentCity = null;
         this.cityWeatherData = new Map();
+        this.clockIntervals = new Map(); // Store clock update intervals
         this.defaultCities = [
             { name: "Mary", country: "Turkmenistan", lat: 37.6, lon: 61.83 },
             { name: "Ashgabat", country: "Turkmenistan", lat: 37.95, lon: 58.38 },
@@ -33,6 +34,7 @@ class WeatherApp {
         this.loadCitiesFromStorage();
         this.setupEventListeners();
         this.renderCities();
+        this.startAllClocks(); // Start real-time clock updates
     }
 
     setupEventListeners() {
@@ -145,17 +147,38 @@ class WeatherApp {
                          data-name="${loc.name}" data-country="${loc.country}">
                         <div class="result-name">${loc.name}</div>
                         <div class="result-country">${loc.state ? loc.state + ', ' : ''}${loc.country}</div>
+                        <div class="result-actions">
+                            <button class="view-btn" data-action="view">👁️ View</button>
+                            <button class="add-btn" data-action="add">➕ Add</button>
+                        </div>
                     </div>`).join('');
 
                 resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
-                    item.addEventListener('click', () => {
+                    item.addEventListener('click', async (e) => {
                         const lat = parseFloat(item.dataset.lat);
                         const lon = parseFloat(item.dataset.lon);
                         const name = item.dataset.name;
                         const country = item.dataset.country;
-                        this.addCity(lat, lon, name, country);
-                        this.hideSearchSuggestions();
-                        document.getElementById('searchInput').value = '';
+
+                        const clickedButton = e.target.closest('button');
+
+                        if (clickedButton?.dataset.action === 'add') {
+                            // Add to collection
+                            this.addCity(lat, lon, name, country);
+                            this.hideSearchSuggestions();
+                            document.getElementById('searchInput').value = '';
+                        } else if (clickedButton?.dataset.action === 'view') {
+                            // Just view without adding
+                            this.hideSearchSuggestions();
+                            document.getElementById('searchInput').value = '';
+
+                            try {
+                                const weather = await weatherService.getCurrentWeather(lat, lon);
+                                this.showCityDetails({ lat, lon, name, country }, weather, false);
+                            } catch (error) {
+                                utils.showError('Failed to load weather data');
+                            }
+                        }
                     });
                 });
 
@@ -196,6 +219,9 @@ class WeatherApp {
         const cityCount = document.getElementById('cityCount');
         cityCount.textContent = this.cities.length;
 
+        // Clear all existing clock intervals
+        this.stopAllClocks();
+
         if (this.cities.length === 0) {
             emptyState.style.display = 'block';
             return;
@@ -207,6 +233,9 @@ class WeatherApp {
             const card = await this.createCityCard(city);
             container.appendChild(card);
         }
+
+        // Start real-time clocks for all cities
+        this.startAllClocks();
     }
 
     async createCityCard(city) {
@@ -226,9 +255,9 @@ class WeatherApp {
             const bgClass = this.getCardBackgroundClass(weather.mainCondition, isDaytime);
 
             card.className = `city-card ${bgClass}`;
-            // CRITICAL: Add data attributes for event delegation
             card.dataset.lat = city.lat;
             card.dataset.lon = city.lon;
+            card.dataset.timezone = timezoneOffset; // Store timezone for clock updates
             card.style.cursor = 'pointer';
 
             card.innerHTML = `
@@ -236,7 +265,7 @@ class WeatherApp {
                     <div class="city-info">
                         <h3>${city.name}</h3>
                         <p>${city.country}</p>
-                        <p class="city-local-time">${localTime}</p>
+                        <p class="city-local-time" data-timezone="${timezoneOffset}">${localTime}</p>
                     </div>
                     <div class="city-temp">${utils.formatTemp(weather.temperature)}°</div>
                 </div>
@@ -257,6 +286,41 @@ class WeatherApp {
         return card;
     }
 
+    // Real-time clock updates
+    startAllClocks() {
+        // Update all city clocks every second
+        const updateClocks = () => {
+            document.querySelectorAll('.city-local-time').forEach(timeElement => {
+                const timezone = parseInt(timeElement.dataset.timezone);
+                if (!isNaN(timezone)) {
+                    timeElement.textContent = utils.getCurrentTimeInTimezone(timezone);
+                }
+            });
+
+            // Update modal clock if open
+            const modalTime = document.getElementById('modalLocalTime');
+            if (modalTime && modalTime.dataset.timezone) {
+                const timezone = parseInt(modalTime.dataset.timezone);
+                modalTime.textContent = utils.getCurrentTimeInTimezone(timezone);
+            }
+        };
+
+        // Clear existing interval if any
+        if (this.mainClockInterval) {
+            clearInterval(this.mainClockInterval);
+        }
+
+        // Update immediately and then every second
+        updateClocks();
+        this.mainClockInterval = setInterval(updateClocks, 1000);
+    }
+
+    stopAllClocks() {
+        if (this.mainClockInterval) {
+            clearInterval(this.mainClockInterval);
+        }
+    }
+
     getCardBackgroundClass(condition, isDaytime) {
         const c = condition.toLowerCase();
         if (c.includes('clear')) return isDaytime ? 'card-bg-clear-day' : 'card-bg-clear-night';
@@ -268,7 +332,7 @@ class WeatherApp {
         return 'card-bg-default';
     }
 
-    async showCityDetails(city, weather) {
+    async showCityDetails(city, weather, showRemoveButton = true) {
         this.currentCity = city;
         const modal = document.getElementById('cityDetailModal');
         const modalLoader = document.getElementById('modalLoader');
@@ -283,10 +347,14 @@ class WeatherApp {
         modalBody.style.display = 'none';
 
         try {
-            // Populate basic weather info (always available from card data)
+            // Populate basic weather info
             const timezoneOffset = weather.timezoneOffset || weather.timezone || 0;
             document.getElementById('modalCityName').textContent = `${city.name}, ${city.country}`;
-            document.getElementById('modalLocalTime').textContent = utils.getCurrentTimeInTimezone(timezoneOffset);
+
+            const modalTime = document.getElementById('modalLocalTime');
+            modalTime.textContent = utils.getCurrentTimeInTimezone(timezoneOffset);
+            modalTime.dataset.timezone = timezoneOffset; // Store for real-time updates
+
             document.getElementById('modalDateTime').textContent = utils.getCurrentDateInTimezone(timezoneOffset);
             document.getElementById('modalWeatherIcon').src = weatherService.getWeatherIconURL(weather.icon);
             document.getElementById('modalTemperature').textContent = utils.formatTemp(weather.temperature);
@@ -297,9 +365,14 @@ class WeatherApp {
             document.getElementById('modalPressure').textContent = utils.formatPressure(weather.pressure);
             document.getElementById('modalUV').textContent = weather.uvIndex || 'N/A';
 
-            // Setup remove button
+            // Setup or hide remove button
             const removeBtn = document.getElementById('removeCityBtn');
-            removeBtn.onclick = () => this.removeCity(city.lat, city.lon);
+            if (showRemoveButton) {
+                removeBtn.style.display = 'flex';
+                removeBtn.onclick = () => this.removeCity(city.lat, city.lon);
+            } else {
+                removeBtn.style.display = 'none';
+            }
 
             // Show content immediately with basic data
             modalLoader.style.display = 'none';
@@ -312,7 +385,6 @@ class WeatherApp {
 
                 if (hourly && hourly.length > 0) {
                     hourlyContainer.innerHTML = hourly.slice(0, 24).map(h => {
-                        // Check if h.dt exists, otherwise use h.time or current timestamp
                         const timestamp = h.dt || h.time || Math.floor(Date.now() / 1000);
                         const hourText = utils.getHourFromTimestamp(timestamp);
                         const icon = h.icon || h.weather?.[0]?.icon || '01d';
