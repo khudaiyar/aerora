@@ -110,9 +110,18 @@ class WeatherApp {
                 const { latitude, longitude } = position.coords;
                 try {
                     const location = await weatherService.reverseGeocode(latitude, longitude);
-                    if (location) this.addCity(location.lat, location.lon, location.name, location.country);
+                    if (location) {
+                        // Just view the location weather, don't add it
+                        const weather = await weatherService.getCurrentWeather(latitude, longitude);
+                        this.showCityDetails(
+                            { lat: latitude, lon: longitude, name: location.name, country: location.country },
+                            weather,
+                            false // false = don't show "Remove City" button
+                        );
+                    }
                 } catch (error) {
                     console.error('Error getting location:', error);
+                    utils.showError('Unable to get weather for your location');
                 }
             },
             () => utils.showError('Unable to retrieve your location')
@@ -126,13 +135,15 @@ class WeatherApp {
         try {
             const locations = await weatherService.searchLocation(query);
             if (locations?.length > 0) {
-                const location = locations[0];
-                this.addCity(location.lat, location.lon, location.name, location.country);
+                // Just show search results, don't add automatically
+                this.showSearchSuggestions(query);
+            } else {
+                utils.showError('Location not found');
                 this.hideSearchSuggestions();
-                document.getElementById('searchInput').value = '';
-            } else utils.showError('Location not found');
+            }
         } catch (error) {
             utils.showError('Error searching for location');
+            this.hideSearchSuggestions();
         }
     }
 
