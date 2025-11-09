@@ -1,7 +1,7 @@
 // Weather Service - API Communication
 class WeatherService {
     constructor() {
-        this.baseURL = 'https://aerora.onrender.com/api';
+        this.baseURL = 'https://aerora-zmgu.onrender.com/api';
     }
 
 

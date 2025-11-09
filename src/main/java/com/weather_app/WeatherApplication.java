@@ -15,8 +15,8 @@ public class WeatherApplication {
         System.out.println("\n========================================");
         System.out.println("🌦️  Weather App Started Successfully!");
         System.out.println("========================================");
-        System.out.println("📍 Application: http://localhost:8080");
-        System.out.println("🗄️  H2 Console: http://localhost:8080/h2-console");
+        System.out.println("📍 Application: http://localhost:8090");
+        System.out.println("🗄️  H2 Console: http://localhost:8090console");
         System.out.println("🔌 API Health: http://localhost:8080/api/weather/health");
         System.out.println("========================================\n");
     }
